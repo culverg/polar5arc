@@ -175,7 +175,7 @@ void hour_display_layer_update_callback(Layer *me, GContext* ctx) {
   #if TWENTY_FOUR_HOUR_DIAL
     angle = (t.tm_hour * 15) + (t.tm_min / 4);
   #else
-    angle = (( t.tm_hour % 12 ) * 30) + (t.tm_min / 2);
+    angle = (( t.tm_hour % 12 ) * 30); // + (tm_min / 2);
   #endif
 
   angle = angle - (angle % 6);
@@ -228,7 +228,7 @@ void day_display_layer_update_callback(Layer *me, GContext* ctx) {
 	
   angle = (( t.tm_mday % maxdays ) * 360 / maxdays ) + (t.tm_hour);
 
-  angle = angle - (angle % 6);
+  angle = angle - (angle % 3);  //use modulo 3 for smaller black overlaps
 
   GPoint center = grect_center_point(&me->frame);
 
@@ -238,7 +238,7 @@ void day_display_layer_update_callback(Layer *me, GContext* ctx) {
 
   graphics_context_set_fill_color(ctx, GColorBlack);
 
-  for(; angle < 355; angle += 6) {
+  for(; angle < 355; angle += 3) {  //has to be same increment as the modulo in line 231
 
     gpath_rotate_to(&day_segment_path, (TRIG_MAX_ANGLE / 360) * angle);
 
@@ -257,8 +257,9 @@ void month_display_layer_update_callback(Layer *me, GContext* ctx) {
   unsigned int angle;
   
   //angle = (( t.tm_mon % 12 ) * 30) + (t.tm_mday / 2);
-  angle = (( ( t.tm_mon + 1) % 12 ) * 30);
-  angle = angle - (angle % 6);
+  angle = (( ( t.tm_mon + 1 ) % 12 ) * 30);
+  
+  angle = angle - (angle % 2);  //use modulo 2 for smaller black overlaps
 
   GPoint center = grect_center_point(&me->frame);
 
@@ -268,7 +269,7 @@ void month_display_layer_update_callback(Layer *me, GContext* ctx) {
 
   graphics_context_set_fill_color(ctx, GColorBlack);
 
-  for(; angle < 355; angle += 6) {
+  for(; angle < 355; angle += 2) {  //has to be same increment as the modulo in line 231
 
     gpath_rotate_to(&month_segment_path, (TRIG_MAX_ANGLE / 360) * angle);
 
